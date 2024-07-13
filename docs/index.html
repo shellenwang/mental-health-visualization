@@ -8,11 +8,17 @@
 </head>
 <body>
     <h1>Mental Health and Depression Data Visualization</h1>
-    <nav>
-        <button id="scene1-btn">Global Trends in Depression</button>
-        <button id="scene2-btn">Age and Gender Distribution</button>
-        <button id="scene3-btn">Depression and Suicide Rates</button>
-    </nav>
+    <div id="controls">
+        <select id="country-select" style="display:none;">
+            <option value="United States">United States</option>
+            <option value="India">India</option>
+            <option value="China">China</option>
+            <option value="Brazil">Brazil</option>
+            <option value="Russia">Russia</option>
+        </select>
+        <button id="prev">Previous</button>
+        <button id="next">Next</button>
+    </div>
     <div id="visualization"></div>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="script.js"></script>
