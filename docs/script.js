@@ -174,12 +174,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateScene2(data, country) {
         const filteredData = data.filter(d => d.Entity === country);
-
+    
         if (filteredData.length === 0) {
             console.error(`No data found for country: ${country}`);
             return;
         }
-
+    
         const ageGroups = [
             '10-14 years old (%)', '15-19 years old (%)', '20-24 years old (%)', 
             '25-29 years old (%)', '30-34 years old (%)', '35-39 years old (%)', 
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
             '55-59 years old (%)', '60-64 years old (%)', '65-69 years old (%)', 
             '70-74 years old (%)', '75-79 years old (%)', '80+ years old (%)'
         ];
-
+    
         const ageData = ageGroups.map(ageGroup => {
             const prevalence = +filteredData[0][ageGroup];
             if (isNaN(prevalence)) {
@@ -202,20 +202,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 prevalence: prevalence
             };
         }).filter(d => d.prevalence > 0); // Filter out entries with 0 prevalence
-
+    
         console.log("Age Data:", ageData);
-
+    
         if (ageData.length === 0) {
             console.error("No valid age data available.");
             return;
         }
-
+    
+        const maxPrevalence = d3.max(ageData, d => d.prevalence);
+    
         const svgWidth = 960;
         const svgHeight = 500;
         const margin = {top: 60, right: 30, bottom: 60, left: 80};
         const width = svgWidth - margin.left - margin.right;
         const height = svgHeight - margin.top - margin.bottom;
-
+    
         const svg = d3.select("#visualization").html("")
                       .append("svg")
                       .attr("width", svgWidth)
@@ -224,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function() {
                       .style("margin", "0 auto")
                       .append("g")
                       .attr("transform", `translate(${margin.left},${margin.top})`);
-
+    
         // Add subheading
         svg.append("text")
            .attr("x", width / 2)
@@ -233,15 +235,15 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "16px")
            .attr("font-weight", "bold")
            .text(`Age Distribution of Depression in ${country} (Most Recent Year)`);
-
+    
         const x = d3.scaleBand().domain(ageData.map(d => d.ageGroup)).range([0, width]).padding(0.1);
-        const y = d3.scaleLinear().domain([0, d3.max(ageData, d => d.prevalence)]).range([height, 0]);
-
+        const y = d3.scaleLinear().domain([0, maxPrevalence]).range([height, 0]);
+    
         // Add the x-axis
         svg.append("g")
            .attr("transform", `translate(0,${height})`)
            .call(d3.axisBottom(x));
-
+    
         // Add x-axis label
         svg.append("text")
            .attr("x", width / 2)
@@ -250,11 +252,11 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "12px")
            .attr("font-weight", "bold")
            .text("Age Group");
-
+    
         // Add the y-axis
         svg.append("g")
            .call(d3.axisLeft(y).ticks(10).tickFormat(d => d + "%"));
-
+    
         // Add y-axis label
         svg.append("text")
            .attr("transform", "rotate(-90)")
@@ -264,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "12px")
            .attr("font-weight", "bold")
            .text("Depression Prevalence (%)");
-
+    
         // Add the bars
         const bars = svg.selectAll(".bar")
            .data(ageData)
@@ -274,8 +276,8 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("y", d => y(d.prevalence))
            .attr("width", x.bandwidth())
            .attr("height", d => height - y(d.prevalence))
-           .attr("fill", "steelblue");
-
+           .attr("fill", d => d.prevalence === maxPrevalence ? "red" : "steelblue");
+    
         // Add labels
         svg.selectAll(".label")
            .data(ageData)
@@ -287,12 +289,12 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "10px")
            .attr("font-weight", "bold")
            .text(d => d.prevalence + "%");
-
+    
         // Add tooltips
         const tooltip = d3.select("body").append("div")
                           .attr("class", "tooltip")
                           .style("opacity", 0);
-
+    
         bars.on("mouseover", function(event, d) {
                tooltip.transition().duration(200).style("opacity", .9);
                tooltip.html(`Age Group: ${d.ageGroup}<br/>Prevalence: ${d.prevalence}%`)
@@ -302,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function() {
            .on("mouseout", function() {
                tooltip.transition().duration(500).style("opacity", 0);
            });
-    }
+    }   
     
     function renderScene3(data) {
         console.log("Rendering Scene 3");
@@ -319,17 +321,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateScene3(data, country) {
         const filteredData = data.filter(d => d.Entity === country);
-
+    
         if (filteredData.length === 0) {
             console.error(`No data found for country: ${country}`);
             return;
         }
-
+    
         const disorderGroups = [
             'Schizophrenia (%)', 'Bipolar disorder (%)', 'Eating disorders (%)',
             'Anxiety disorders (%)', 'Drug use disorders (%)', 'Depressive disorders (%)'
         ];
-
+    
         const disorderData = disorderGroups.map(disorder => {
             const prevalence = +filteredData[0][disorder];
             if (isNaN(prevalence)) {
@@ -344,20 +346,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 prevalence: prevalence
             };
         }).filter(d => d.prevalence > 0); // Filter out entries with 0 prevalence
-
+    
         console.log("Disorder Data:", disorderData);
-
+    
         if (disorderData.length === 0) {
             console.error("No valid disorder data available.");
             return;
         }
-
+    
+        const maxPrevalence = d3.max(disorderData, d => d.prevalence);
+    
         const svgWidth = 960;
         const svgHeight = 500;
         const margin = {top: 60, right: 30, bottom: 60, left: 80};
         const width = svgWidth - margin.left - margin.right;
         const height = svgHeight - margin.top - margin.bottom;
-
+    
         const svg = d3.select("#visualization").html("")
                       .append("svg")
                       .attr("width", svgWidth)
@@ -366,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
                       .style("margin", "0 auto")
                       .append("g")
                       .attr("transform", `translate(${margin.left},${margin.top})`);
-
+    
         // Add subheading
         svg.append("text")
            .attr("x", width / 2)
@@ -375,15 +379,15 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "16px")
            .attr("font-weight", "bold")
            .text(`Comparison of Mental Disorders Prevalence in ${country}`);
-
+    
         const x = d3.scaleBand().domain(disorderData.map(d => d.disorder)).range([0, width]).padding(0.1);
-        const y = d3.scaleLinear().domain([0, d3.max(disorderData, d => d.prevalence)]).range([height, 0]);
-
+        const y = d3.scaleLinear().domain([0, maxPrevalence]).range([height, 0]);
+    
         // Add the x-axis
         svg.append("g")
            .attr("transform", `translate(0,${height})`)
            .call(d3.axisBottom(x));
-
+    
         // Add x-axis label
         svg.append("text")
            .attr("x", width / 2)
@@ -392,11 +396,11 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "12px")
            .attr("font-weight", "bold")
            .text("Mental Disorders");
-
+    
         // Add the y-axis
         svg.append("g")
            .call(d3.axisLeft(y).ticks(10).tickFormat(d => d + "%"));
-
+    
         // Add y-axis label
         svg.append("text")
            .attr("transform", "rotate(-90)")
@@ -406,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "12px")
            .attr("font-weight", "bold")
            .text("Prevalence (%)");
-
+    
         // Add the bars
         const bars = svg.selectAll(".bar")
            .data(disorderData)
@@ -416,8 +420,8 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("y", d => y(d.prevalence))
            .attr("width", x.bandwidth())
            .attr("height", d => height - y(d.prevalence))
-           .attr("fill", "steelblue");
-
+           .attr("fill", d => d.prevalence === maxPrevalence ? "red" : "steelblue");
+    
         // Add labels
         svg.selectAll(".label")
            .data(disorderData)
@@ -429,12 +433,12 @@ document.addEventListener("DOMContentLoaded", function() {
            .attr("font-size", "10px")
            .attr("font-weight", "bold")
            .text(d => d.prevalence + "%");
-
+    
         // Add tooltips
         const tooltip = d3.select("body").append("div")
                           .attr("class", "tooltip")
                           .style("opacity", 0);
-
+    
         bars.on("mouseover", function(event, d) {
                tooltip.transition().duration(200).style("opacity", .9);
                tooltip.html(`Disorder: ${d.disorder}<br/>Prevalence: ${d.prevalence}%`)
@@ -445,6 +449,7 @@ document.addEventListener("DOMContentLoaded", function() {
                tooltip.transition().duration(500).style("opacity", 0);
            });
     }
+    
     
     function renderCurrentScene() {
         const scene = scenes[currentScene];
